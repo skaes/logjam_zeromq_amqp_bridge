@@ -1,0 +1,7 @@
+#!/usr/bin/env ruby
+$:.unshift(File.expand_path("../../lib", __FILE__))
+
+require "logjam_zeromq_amqp_bridge"
+require "logjam_zeromq_amqp_bridge/tester"
+
+LogjamZeromqAmqpBridge::Tester.new.run

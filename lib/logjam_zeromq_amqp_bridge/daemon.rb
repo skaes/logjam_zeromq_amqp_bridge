@@ -14,6 +14,9 @@ module LogjamZeromqAmqpBridge
     end
 
     def run
+      #require "ruby-prof"
+      #RubyProf.measure_mode = RubyProf::PROCESS_TIME
+      #RubyProf.start
       socket = @socket
       @received = 0
       loop do
@@ -25,13 +28,18 @@ module LogjamZeromqAmqpBridge
         # puts routing_key
         @received += 1
         # shutdown if @received >=10000
-        # publish(exchange_name, routing_key, data)
+        publish(exchange_name, routing_key, data)
       end
     end
 
     def shutdown
       puts "shutting down"
       puts "after #{@received} messages"
+      #result = RubyProf.stop
+      #printer = RubyProf::MultiPrinter.new(result)
+      #printer.print(:path => ".",
+      #              :profile => "mumu",
+      #              :min_percent => 1, :threshold => 1)
       reset
       @socket.close
       @context.close

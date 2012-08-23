@@ -28,7 +28,7 @@ module LogjamZeromqAmqpBridge
             @published += 1
             @lost += 1 unless sent
             # puts @published
-            sleep 0.00001
+            sleep 0.0005
           end
         end
         printf "runtime %.3fs, msgs/sec=%.3f", duration, (@published-@lost)/duration

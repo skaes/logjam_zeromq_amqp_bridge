@@ -4,4 +4,4 @@ $:.unshift(File.expand_path("../../lib", __FILE__))
 require "logjam_zeromq_amqp_bridge"
 require "logjam_zeromq_amqp_bridge/tester"
 
-LogjamZeromqAmqpBridge::Tester.new.run
+LogjamZeromqAmqpBridge::Tester.new(ARGV.first).run

@@ -1,8 +1,10 @@
 require "benchmark"
+require "zmq"
 
 module LogjamZeromqAmqpBridge
   class Tester
-    def initialize
+    def initialize(message_count=10000)
+      @message_count = message_count.to_i
       @context = ZMQ::Context.new(1)
       @socket = @context.socket(ZMQ::PUSH)
       @socket.setsockopt(ZMQ::LINGER, 100)
@@ -15,25 +17,23 @@ module LogjamZeromqAmqpBridge
       trap("TERM"){ shutdown }
     end
 
-    DATA = "a" * 5000
+    DATA = "a" * 1000
 
     def run
       socket = @socket
-      loop do
-        duration = Benchmark.realtime do
-          100000.times do
-            sent = socket.send("zmq-bridge-tester", ZMQ::SNDMORE|ZMQ::NOBLOCK)
-            sent &= socket.send("logjam.zmq.test.#{@published}", ZMQ::SNDMORE|ZMQ::NOBLOCK)
-            sent &= socket.send(DATA, ZMQ::NOBLOCK)
-            @published += 1
-            @lost += 1 unless sent
-            # puts @published
-            sleep 0.0005
-          end
+      duration = Benchmark.realtime do
+        @message_count.times do
+          sent = socket.send("zmq-bridge-tester", ZMQ::SNDMORE|ZMQ::NOBLOCK)
+          sent &= socket.send("logjam.zmq.test.#{@published}", ZMQ::SNDMORE|ZMQ::NOBLOCK)
+          sent &= socket.send(DATA, ZMQ::NOBLOCK)
+          @published += 1
+          @lost += 1 unless sent
+          # puts @published
+          sleep 0.0002
         end
-        printf "runtime %.3fs, msgs/sec=%.3f", duration, (@published-@lost)/duration
-        shutdown
       end
+      printf "runtime %.3fs, msgs/sec=%.3f", duration, (@published-@lost)/duration
+      shutdown
     end
 
     def shutdown

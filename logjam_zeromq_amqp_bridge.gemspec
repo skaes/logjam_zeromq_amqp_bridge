@@ -15,7 +15,8 @@ Gem::Specification.new do |gem|
   gem.require_paths = ["lib"]
   gem.version       = LogjamZeromqAmqpBridge::VERSION
 
-  gem.add_runtime_dependency "zmq"
-  gem.add_runtime_dependency "bunny"
+  gem.add_runtime_dependency "em-zeromq-mri"
+  gem.add_runtime_dependency "amqp"
+  gem.add_development_dependency "zmq"
 
 end

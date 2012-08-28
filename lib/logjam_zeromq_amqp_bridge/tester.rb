@@ -18,18 +18,19 @@ module LogjamZeromqAmqpBridge
     end
 
     DATA = "a" * 4000
+    EXCHANGES = %w(zmq-bridge-tester-1 zmq-bridge-tester-2)
 
     def run
       socket = @socket
       duration = Benchmark.realtime do
         @message_count.times do
-          sent = socket.send("zmq-bridge-tester", ZMQ::SNDMORE|ZMQ::NOBLOCK)
+          sent = socket.send(EXCHANGES[@published % 2], ZMQ::SNDMORE|ZMQ::NOBLOCK)
           sent = false unless socket.send("logjam.zmq.test.#{@published}", ZMQ::SNDMORE|ZMQ::NOBLOCK)
           sent = false unless socket.send(DATA, ZMQ::NOBLOCK)
           @published += 1
           @lost += 1 unless sent
           # puts @published
-          sleep 0.000017
+          sleep 0.00002
         end
       end
       printf "runtime %.3fs, msgs/sec=%.3f", duration, (@published-@lost)/duration
